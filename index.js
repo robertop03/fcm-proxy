@@ -66,3 +66,7 @@ app.post("/api/send-notification", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server attivo su http://localhost:${PORT}`);
 });
+
+app.get("/ping", (req, res) => {
+  res.status(200).send("Pong dal server attivo!");
+});
