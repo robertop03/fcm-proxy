@@ -1,9 +1,14 @@
 {
-  "version": 2,
   "functions": {
     "api/send-notification.js": {
-      "memory": 128,
+      "memory": 512,
       "maxDuration": 10
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "/api/send-notification",
+      "methods": ["POST"]
+    }
+  ]
 }
