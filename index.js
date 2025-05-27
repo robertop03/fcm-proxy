@@ -28,39 +28,45 @@ if (!admin.apps.length) {
 }
 
 // 📬 Endpoint POST per inviare notifica
-app.post("/api/send-notification", async (req, res) => {
-  const { fcmToken, notificaJson } = req.body;
+app.route("/api/send-notification")
+  .get((req, res) => {
+    // Risposta al ping di UptimeRobot
+    res.status(200).send("Ping ricevuto - server attivo");
+  })
+  .post(async (req, res) => {
+    const { fcmToken, notificaJson } = req.body;
 
-  if (!fcmToken || !notificaJson) {
-    return res.status(400).json({ error: "Missing fcmToken or notificaJson" });
-  }
+    if (!fcmToken || !notificaJson) {
+      return res.status(400).json({ error: "Missing fcmToken or notificaJson" });
+    }
 
-  try {
-    const notifica = JSON.parse(decodeURIComponent(notificaJson));
+    try {
+      const notifica = JSON.parse(decodeURIComponent(notificaJson));
 
-    console.log("📨 Inviando notifica a:", fcmToken);
-    console.log("📝 Contenuto:", notifica.titolo, "-", notifica.testo);
+      console.log("📨 Inviando notifica a:", fcmToken);
+      console.log("📝 Contenuto:", notifica.titolo, "-", notifica.testo);
 
-    const message = {
-      token: fcmToken,
-      notification: {
-        title: notifica.titolo,
-        body: notifica.testo,
-      },
-      data: {
-        notificaJson: encodeURIComponent(JSON.stringify(notifica)),
-      },
-    };
+      const message = {
+        token: fcmToken,
+        notification: {
+          title: notifica.titolo,
+          body: notifica.testo,
+        },
+        data: {
+          notificaJson: encodeURIComponent(JSON.stringify(notifica)),
+        },
+      };
 
-    const response = await admin.messaging().send(message);
+      const response = await admin.messaging().send(message);
 
-    console.log("✅ Notifica inviata:", response);
-    return res.status(200).json({ success: true, response });
-  } catch (error) {
-    console.error("❌ Errore FCM:", error);
-    return res.status(500).json({ success: false, error: error.message });
-  }
-});
+      console.log("✅ Notifica inviata:", response);
+      return res.status(200).json({ success: true, response });
+    } catch (error) {
+      console.error("❌ Errore FCM:", error);
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
 
 // 🚀 Avvia il server
 app.listen(PORT, () => {
