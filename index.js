@@ -29,6 +29,9 @@ if (!admin.apps.length) {
 
 // 📬 Endpoint POST per inviare notifica
 app.route("/api/send-notification")
+	.head((req, res) => {
+		res.status(200).end();
+	})
   .get((req, res) => {
     // Risposta al ping di UptimeRobot
     res.status(200).send("Ping ricevuto - server attivo");
