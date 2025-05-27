@@ -4,6 +4,9 @@
       "memory": 512,
       "maxDuration": 10
     }
+	"api/cron.js": {
+      "runtime": "nodejs18.x"
+    }
   },
   "routes": [
     {
