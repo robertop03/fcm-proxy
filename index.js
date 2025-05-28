@@ -8,34 +8,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// 🔐 Inizializzazione Firebase Admin con variabile d'ambiente
+// Inizializzazione Firebase Admin con variabile d'ambiente
 if (!admin.apps.length) {
   try {
     const raw = process.env.FCM_SERVICE_ACCOUNT;
-    console.log("🔍 Variabile FCM_SERVICE_ACCOUNT:", !!raw ? "TROVATA ✅" : "❌ NON trovata");
+    console.log("Variabile FCM_SERVICE_ACCOUNT:", !!raw ? "TROVATA" : "NON trovata");
 
     const serviceAccount = JSON.parse(raw);
 
-    // Fix: rimpiazza \\n con \n nella private_key
     serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
   } catch (err) {
-    console.error("❌ Errore inizializzazione Firebase:", err.message);
+    console.error("Errore inizializzazione Firebase:", err.message);
   }
 }
 
-// 📬 Endpoint POST per inviare notifica
+// Endpoint POST per inviare notifica
 app.route("/api/send-notification")
-	.head((req, res) => {
-		res.status(200).end();
-	})
-  .get((req, res) => {
-    // Risposta al ping di UptimeRobot
-    res.status(200).send("Ping ricevuto - server attivo");
-  })
   .post(async (req, res) => {
     const { fcmToken, notificaJson } = req.body;
 
@@ -44,10 +36,10 @@ app.route("/api/send-notification")
     }
 
     try {
-      const notifica = JSON.parse(decodeURIComponent(notificaJson));
+      const notifica = notificaJson;
 
-      console.log("📨 Inviando notifica a:", fcmToken);
-      console.log("📝 Contenuto:", notifica.titolo, "-", notifica.testo);
+      console.log("Inviando notifica a:", fcmToken);
+      console.log("Contenuto:", notifica.titolo, "-", notifica.testo);
 
       const message = {
         token: fcmToken,
@@ -56,26 +48,22 @@ app.route("/api/send-notification")
           body: notifica.testo,
         },
         data: {
-          notificaJson: encodeURIComponent(JSON.stringify(notifica)),
+          notificaJson: JSON.stringify(notifica),,
         },
       };
 
       const response = await admin.messaging().send(message);
 
-      console.log("✅ Notifica inviata:", response);
+      console.log("Notifica inviata:", response);
       return res.status(200).json({ success: true, response });
     } catch (error) {
-      console.error("❌ Errore FCM:", error);
+      console.error("Errore FCM:", error);
       return res.status(500).json({ success: false, error: error.message });
     }
   });
 
 
-// 🚀 Avvia il server
+// Avvia il server
 app.listen(PORT, () => {
-  console.log(`🚀 Server attivo su http://localhost:${PORT}`);
-});
-
-app.get("/ping", (req, res) => {
-  res.status(200).send("Pong dal server attivo!");
+  console.log(`Server attivo su http://localhost:${PORT}`);
 });
