@@ -48,7 +48,7 @@ app.route("/api/send-notification")
           body: notifica.testo,
         },
         data: {
-          notificaJson: JSON.stringify(notifica),,
+          notificaJson: JSON.stringify(notifica),
         },
       };
 
